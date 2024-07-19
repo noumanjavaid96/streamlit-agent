@@ -1,6 +1,6 @@
 import streamlit as st
 from pathlib import Path
-from langchain.llms.openai import OpenAI
+from langchain.llms.chat_models import ChatOpenAI
 from langchain.agents import create_sql_agent
 from langchain.sql_database import SQLDatabase
 from langchain.agents.agent_types import AgentType
@@ -44,7 +44,7 @@ if not openai_api_key:
     st.stop()
 
 # Setup agent
-llm = OpenAI(openai_api_key=openai_api_key, temperature=0, streaming=True)
+llm = ChatOpenAI(model="gpt-4o",openai_api_key=openai_api_key, temperature=0, streaming=True)
 
 
 @st.cache_resource(ttl="2h")
@@ -66,7 +66,8 @@ agent = create_sql_agent(
     llm=llm,
     toolkit=toolkit,
     verbose=True,
-    agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION, handle_parsing_error=True  
+  
 )
 
 if "messages" not in st.session_state or st.sidebar.button("Clear message history"):
